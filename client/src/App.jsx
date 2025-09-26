@@ -76,7 +76,7 @@ function App() {
       <p className="mt-3 flex justify-center items-center text-center divide-x divide-gray-300 dark:divide-gray-700">
         <a
           className="pr-3.5 inline-flex items-center gap-x-2 text-sm text-gray-600 decoration-2 hover:underline hover:text-blue-600 dark:text-gray-500 dark:hover:text-gray-200"
-          href="#"
+          href="https://github.com/albinjoby"
           target="_blank"
         >
           View Github
