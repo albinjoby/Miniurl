@@ -35,16 +35,23 @@ app.get("/", async (req, res) => {
   }
 });
 
+//convert longurl to shorturl
 app.post("/", async (req, res) => {
   try {
     const url = req.body.url;
+    // const exists = await pool.query("SELECT * FROM urls WHERE link=$1", [url])
+    // if(exists.rowCount > 0){
+    //   return res.json({
+    //     link: `http://localhost:3000/${exists.rows[0].id}`
+    //   })
+    // }
     let id = await redisClient.incr("global:counter");
     id = base62Encoder(id);
     const result = await pool.query(
       "INSERT INTO urls (id, link) VALUES ($1, $2)",
       [id, url],
     );
-    res.status(200)
+    res.json({link: `http://localhost:3000/${id}`})
   } catch (err) {
     console.error(err);
   }
@@ -54,6 +61,11 @@ app.post("/", async (req, res) => {
 app.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
+    //check cache first
+    const cachedUrl = await redisClient.get(id)
+    if(cachedUrl){
+      return res.redirect(cachedUrl)
+    }
     const result = await pool.query("SELECT * FROM urls WHERE id=$1", [id]);
     if (result.rowCount === 0) {
       res.redirect("/");
@@ -62,6 +74,8 @@ app.get("/:id", async (req, res) => {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
         url = "https://" + url;
       }
+      //set link to cache
+      await redisClient.setEx(id, 10, url)
       res.redirect(url);
     }
   } catch (err) {
