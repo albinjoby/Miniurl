@@ -45,7 +45,7 @@ A simple URL shortener project with a Node.js/Express backend and PostgreSQL dat
 ## Project Structure
 
 ```
-client/      # Frontend (currently empty)
+client/      # Frontend
 server/      # Backend API
   ├── db.js
   ├── index.js
